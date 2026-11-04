@@ -58,7 +58,7 @@ p{margin:0}
 .link{font-size:11px;letter-spacing:.3em;text-transform:uppercase;border-bottom:1px solid var(--ochre);padding-bottom:6px}
 
 /* Announcement */
-.announce{background:var(--blue)}
+.announce{position:relative;z-index:5;background:var(--blue)}
 .announce .wrap{min-height:38px;display:flex;align-items:center;justify-content:space-between;gap:24px}
 .announce span,.announce a{font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:var(--navy)}
 .announce a:hover{color:var(--riviera)}
@@ -69,11 +69,11 @@ p{margin:0}
 .header .wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,3fr);align-items:center;gap:0 28px;min-height:84px}
 .header__bar{display:flex;align-items:center;justify-content:space-between;gap:24px}
 .nav{display:flex;gap:26px;align-items:center}
-.nav a{font-size:11px;letter-spacing:.2em;text-transform:uppercase;padding:6px 0;border-bottom:1px solid transparent}
+.nav a{font-size:11.5px;letter-spacing:.22em;text-transform:uppercase;padding:6px 0;border-bottom:1px solid transparent}
 .nav a:hover{border-bottom-color:rgba(41,58,87,.35)}
 .nav a[aria-current]{font-weight:500;border-bottom-color:var(--navy)}
 .logo{justify-self:start}
-.logo img{height:47px;width:auto}
+.logo img{height:52px;width:auto}
 .icons{display:flex;align-items:center;margin-right:-12px}
 .icon-btn{width:44px;height:44px;display:flex;align-items:center;justify-content:center;background:none;border:0;color:var(--navy)}
 .bag{position:relative;display:flex;align-items:center;gap:6px;height:44px;padding:0 12px 0 8px;font-size:11px;letter-spacing:.16em}
@@ -179,11 +179,55 @@ p{margin:0}
   opacity:0;transform:translateY(-6px);transition:opacity .35s ease,transform .5s cubic-bezier(.2,.7,.1,1);pointer-events:none}
 .card.in-bag .card__tag{opacity:1;transform:none}
 .add--sold{border:0;padding:0;height:auto;min-width:0;background:none!important;color:var(--muted);font-weight:500;cursor:default}
+/* add: a blind emboss pressed into the card, a plus at its centre. Pointing at the card deepens it and "Add"
+   slides out; adding drops a wax seal onto the emboss, with the count pressed into the wax */
+.add.add--seal{height:auto;min-width:0;padding:0;border:0!important;background:none!important;color:var(--navy)!important}
+.seal{display:block;flex:0 0 40px;width:40px;height:40px;min-width:40px;background:url("assets/img/seal-m.png") center/contain no-repeat;
+  filter:drop-shadow(0 1.5px 1.2px rgba(90,55,15,.3)) drop-shadow(0 4px 6px rgba(90,55,15,.12));transition:transform .6s cubic-bezier(.3,1.4,.5,1)}
+.emb{display:block;flex:0 0 40px;width:40px;height:40px;min-width:40px;background:url("assets/img/emboss-plus.png") center/contain no-repeat;
+  opacity:1;transition:opacity .4s ease,transform .6s cubic-bezier(.3,1.4,.5,1),filter .4s ease}
+.card:hover .add--seal .emb,.add--seal:focus-visible .emb{opacity:1;transform:scale(1.06);filter:contrast(1.12)}
+.add--seal:hover .emb{transform:scale(1.1);filter:contrast(1.25)}
+.card:not(.in-bag) .add--seal .emb{animation:embIn .6s ease}
+@keyframes embIn{from{opacity:0;transform:scale(.9)}}
+/* the seal drops onto the emboss: from above and turned, it lands, flattens a touch, and settles */
+.card.in-bag .seal--n{animation:sealdrop .75s cubic-bezier(.2,.9,.3,1)}
+@keyframes sealdrop{0%{opacity:0;transform:translateY(-16px) scale(1.45) rotate(-28deg);filter:drop-shadow(0 14px 10px rgba(90,55,15,.18))}
+  55%{opacity:1;transform:translateY(0) scale(.9) rotate(3deg)}75%{transform:scale(1.05) rotate(-1deg)}100%{transform:none}}
+.card.in-bag .qty{animation:none;background:url("assets/img/emboss-plus.png") right center/40px 40px no-repeat}
+/* the seal stays where the emboss was, flush right; plus and minus stack beside it, plus on top */
+.card.in-bag .qty{display:grid;grid-template-columns:auto 40px;grid-template-rows:1fr 1fr;column-gap:6px;align-items:center}
+.card .qty .seal--n{grid-column:2;grid-row:1/3}
+.card .qty__btn[data-step="1"]{grid-column:1;grid-row:1;align-self:end}
+.card .qty__btn[data-step="-1"]{grid-column:1;grid-row:2;align-self:start}
+.card.in-bag .qty__btn{animation:btnIn .5s ease .35s both}
+@keyframes btnIn{from{opacity:0;transform:scale(.6)}}
+.add--seal .add__label{font-size:9.5px;letter-spacing:.24em;color:var(--gold)}
+.card:hover .add--seal .add__label,.add--seal:focus-visible .add__label{margin-right:10px}
+.seal.is-pressed{animation:sealpress .55s cubic-bezier(.3,1.3,.5,1)}
+@keyframes sealpress{0%{transform:scale(1)}30%{transform:scale(.8) rotate(-5deg)}70%{transform:scale(1.08)}100%{transform:scale(1)}}
+.card .qty{height:auto;padding:0;gap:2px;background:none;color:var(--navy)}
+.card .qty__btn{width:24px;height:24px;color:var(--navy);opacity:.75;transition:opacity .25s,background .25s}
+@media (hover:hover){.card .qty__btn:hover{opacity:1;background:rgba(41,58,87,.08)}}
+/* the seal (or the stepper, or "Sold out") has its own slot on the right of the card, centred on the name and price */
+.card__info{position:relative;padding-right:76px}
+.card.in-bag .card__info{padding-right:92px}
+.card__meta>:last-child{position:absolute;right:14px;top:50%;transform:translateY(-50%)}
+.card .qty{gap:0;height:40px;align-items:center;width:max-content}
+.card__meta>.buy{width:max-content}
+.card .qty__btn{position:relative;width:20px;height:18px;border-radius:4px;opacity:.9}
+.card .qty__btn svg{width:17px;height:17px;stroke-width:1.6}
+/* a larger, invisible touch area around each small control */
+.card .qty__btn::before{content:"";position:absolute;left:-10px;right:-4px;top:-8px;bottom:0}
+.card .qty__btn[data-step="-1"]::before{top:0;bottom:-8px}
+.seal--n{display:flex;align-items:center;justify-content:center;background-image:url("assets/img/seal-blank.png")}
+.seal--n .qty__n{display:block;min-width:0;line-height:1;font-size:13px;font-weight:600;color:#6a4314;text-shadow:0 1px 0 rgba(255,228,175,.75),0 -1px 0 rgba(90,50,10,.22)}
 
 /* touch screens have no hover: the ring is filled so it reads as a button, and the photo opens the details */
 @media (hover:none){
   .add{background:var(--ochre);border-color:var(--ochre)}
   .card__detail{display:none}
+  .add--seal .add__label{max-width:90px;opacity:1;margin-right:8px}
 }
 @media (prefers-reduced-motion:reduce){
   .card__detail{transform:none;transition:opacity .3s ease}
@@ -235,6 +279,7 @@ p{margin:0}
 .story{text-align:center}
 .story .wrap{max-width:620px;display:flex;flex-direction:column;align-items:center;gap:20px}
 .story__crest{width:184px;height:auto;margin-bottom:6px}
+.story__crest--m{width:150px;margin-bottom:10px}
 .story h2{font-size:36px;line-height:1.15}
 .story p{font-size:16px;line-height:1.8;font-weight:300}
 .story .link{margin-top:8px}
@@ -274,6 +319,192 @@ p{margin:0}
 .socials{display:flex;margin-right:-12px}
 .socials a{width:44px;height:44px;display:flex;align-items:center;justify-content:center}
 .copyright{margin-top:16px;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--blue)}
+
+
+
+/* ======================================================================
+   Holiday intro: a full-frame paper sleeve with a cut window. Scrolling
+   lifts the sleeve up and away in one movement; the sheet beneath holds
+   still, so it seems to slide out, and then the page simply carries on.
+   ====================================================================== */
+.intro{position:relative;z-index:0;height:300vh;margin-top:calc(-1 * var(--hh,122px))}
+.intro__anchor{position:absolute;left:0;top:calc(100% - 100vh);height:1px;width:1px}
+.intro__stage{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;background:var(--cream)}
+/* the inner sheet: the Pastel Toot Tower on the studio backdrop; the script shrinks it into the centre tile */
+/* the ground under the paper is light; the tower photo is multiplied onto it, so it sits on any ground */
+.sheet{position:absolute;inset:0;z-index:1;background:var(--cream)}
+.htile{position:absolute;background:#ECDFD8;opacity:0;transform:translateY(10px);transition:opacity .7s ease,transform .7s ease}
+.intro.is-revealed .htile{opacity:1;transform:none;transition:opacity 1.5s cubic-bezier(.25,.6,.3,1),transform 1.8s cubic-bezier(.2,.7,.2,1)}
+.sheet img{position:absolute;max-width:none;height:auto}
+.sheet__tower{mix-blend-mode:multiply;-webkit-mask-image:radial-gradient(ellipse 48% 46% at 50% 51%,#000 70%,transparent 100%);mask-image:radial-gradient(ellipse 48% 46% at 50% 51%,#000 70%,transparent 100%)}
+/* the introduction adds a Christmas bauble: it rolls in from the right and comes to rest against the bowl,
+   its shadow gathering under it. It stays for the collection and leaves when the paper comes back */
+.orn,.orn-sh{opacity:0;pointer-events:none;transition:opacity .45s ease}
+.orn-sh{mix-blend-mode:multiply}
+.orn{transform-origin:49.8% 65.9%;will-change:transform}
+.intro.is-intro .orn{opacity:1;animation:orn-roll 2.2s cubic-bezier(.22,.68,.25,1) .8s both}
+.intro.is-intro .orn-sh{opacity:1;animation:orn-shade 2.2s cubic-bezier(.22,.68,.25,1) .8s both}
+@keyframes orn-roll{0%{opacity:0;transform:translateX(var(--rd,60px)) rotate(var(--rt,30deg))}14%{opacity:1}
+  86%{transform:translateX(-1.5px) rotate(-1.2deg)}100%{opacity:1;transform:none}}
+@keyframes orn-shade{0%{opacity:0;transform:translateX(var(--rd,60px))}35%{opacity:.6}86%{transform:translateX(-1.5px)}100%{opacity:1;transform:none}}
+.intro.no-anim .orn,.intro.no-anim .orn-sh{animation:none}
+/* the composition the sheet settles into: the tower at the centre, two pieces either side */
+.hero{position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;align-items:center;padding:5.5vh var(--gutter) 4.5vh;pointer-events:none}
+.hero>*{pointer-events:auto}
+.hero__head{text-align:center}
+.hero__head h1{margin-top:10px;font-size:clamp(34px,3.4vw,48px);line-height:1}
+.hero__head .shead__eyebrow{display:inline-block}
+.br-m{display:none}
+.hero__dates{margin-top:12px;display:flex;justify-content:center;gap:28px;font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:var(--muted)}
+.hero__dates em{font-style:normal;color:var(--ochre-deep)}
+.hero__grid{flex:1;min-height:0;width:100%;max-width:var(--wrap);margin-top:3.2vh;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.32fr) minmax(0,1fr);gap:3px}
+.hero__col{display:grid;grid-template-rows:1fr 1fr;gap:3px;min-height:0}
+.hero__center{display:flex;flex-direction:column;min-height:0}
+.hero__slot{flex:1;min-height:0}
+.hero .card{min-height:0;height:100%}
+.hero .card__media{flex:1;aspect-ratio:auto;min-height:0}
+.hero__center .card{height:auto;flex:none}
+.hero__center .card__media{display:none}
+.hero__center .card__info{padding:13px 18px 15px}
+.hero__center .card__name{font-size:14px}
+/* the reveal: each piece surfaces out of a soft blur, slowly, one after another */
+.js-hero .hero .card,.js-hero .hero__head{opacity:0;transform:translateY(14px);pointer-events:none;
+  transition:opacity .6s ease,transform .6s ease;transition-delay:0s}
+.js-hero .intro.is-revealed .hero .card,.js-hero .intro.is-revealed .hero__head{opacity:1;transform:none;pointer-events:auto;
+  transition:opacity 1.5s cubic-bezier(.25,.6,.3,1),transform 1.8s cubic-bezier(.2,.7,.2,1);transition-delay:var(--dl,0s)}
+.intro.no-anim .hero .card,.intro.no-anim .hero__head{transition:none!important}
+.intro.no-anim .halo{animation:none;opacity:0}
+.intro.no-anim .htile{transition:none}
+.intro.no-anim .dust{display:none}
+/* a warm light blooms around the tower as the pieces appear, then fades away */
+.halo{position:absolute;z-index:1;border-radius:50%;pointer-events:none;opacity:0;
+  background:radial-gradient(closest-side,rgba(255,250,236,.95),rgba(255,244,222,.55) 45%,rgba(255,240,215,0) 100%);mix-blend-mode:screen}
+.intro.is-intro .halo{animation:bloom 3s cubic-bezier(.3,.5,.3,1) both}
+@keyframes bloom{0%{opacity:0;transform:scale(.9)}35%{opacity:.42;transform:scale(1.03)}100%{opacity:0;transform:scale(1.06)}}
+/* gold dust: a few motes rise and twinkle once around the tower */
+.dust{position:absolute;inset:0;z-index:3;pointer-events:none;overflow:hidden}
+.dust i{position:absolute;left:var(--x);top:var(--y);width:var(--s);height:var(--s);border-radius:50%;opacity:0;
+  background:radial-gradient(circle,#FFF7E0 0%,#F1CF86 45%,rgba(224,164,80,0) 72%);box-shadow:0 0 6px 1px rgba(241,207,134,.55)}
+.intro.is-intro .dust i{animation:mote var(--t) cubic-bezier(.3,.4,.4,1) var(--d) both}
+@keyframes mote{0%{opacity:0;transform:translate(0,0) scale(.3)}18%{opacity:1;transform:translate(calc(var(--dx) * .2),-12px) scale(1)}
+  40%{opacity:.35}55%{opacity:.95}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(.6)}}
+
+/* the sleeve: textured brand-blue paper, its window cut by a mask that the script draws to the screen size */
+.sleeve{position:absolute;inset:0;z-index:4;transform:translateY(var(--sy,0px));will-change:transform}
+.sleeve__shade{position:absolute;left:0;right:0;bottom:-80px;height:80px;opacity:var(--so,0);
+  background:linear-gradient(to bottom,rgba(52,40,34,.24),rgba(52,40,34,0) 7px),linear-gradient(to bottom,rgba(52,40,34,.1),rgba(52,40,34,.04) 30px,rgba(52,40,34,0) 80px)}
+.sleeve__paper{position:absolute;inset:0;background-color:#B8C9E1;background-image:url("assets/img/paper-tile.jpg");background-repeat:repeat;-webkit-mask-size:100% 100%;mask-size:100% 100%;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat}
+.sleeve__edge{display:none}
+/* the real cut edge around the window, from a photograph, and the shadow it casts onto the sheet beneath */
+.sleeve__win{position:absolute;max-width:none;height:auto;pointer-events:none}
+.wshadow{position:absolute;z-index:3;max-width:none;height:auto;pointer-events:none;mix-blend-mode:multiply;transform:translateY(var(--sy,0px));will-change:transform}
+.sleeve__text{position:absolute;inset:0;pointer-events:none;color:var(--navy)}
+/* the printed composition on the paper: the crest's frame around the window, the cupid flown out of it,
+   the title beneath, two white sprigs at the edges. The script places each piece from the window's geometry */
+.sv{position:absolute;margin:0;max-width:none;height:auto;pointer-events:none}
+.sv--title{line-height:0}
+/* the cupid pressed into the paper like the rest of the print */
+.sv--cupid{filter:drop-shadow(.6px 1px 0 rgba(255,255,255,.55)) drop-shadow(-.4px -.8px .6px rgba(40,50,72,.28))}
+.sv--title img{width:100%;height:auto}
+.sv-t2,.sv--frame-m{display:none}
+@media (max-width:900px){.sv--title .sv-t1,.sv--frame:not(.sv--frame-m){display:none}.sv--title .sv-t2,.sv--frame-m{display:block}}
+/* the header and the utility bar sit straight on the paper */
+.js-hero .header{background:transparent;border-bottom-color:transparent}
+/* on the paper the header needs a ground line and a firmer voice, or it floats */
+.js-hero .header .wrap{border-bottom:1px solid rgba(41,58,87,.22)}
+.js-hero .nav a{font-weight:500;color:var(--navy)}
+.js-hero .nav a[aria-current]{border-bottom-color:var(--ochre-deep);border-bottom-width:2px}
+/* scroll cue: a slim capsule with a bead that slides down, centred under the composition */
+.intro__cue{position:absolute;left:50%;top:var(--cuey,auto);bottom:auto;z-index:6;width:20px;height:32px;margin-left:-10px;border:1px solid rgba(41,58,87,.5);border-radius:11px;
+  opacity:var(--uo,1);transition:opacity .5s ease,top .9s cubic-bezier(.3,0,.2,1);pointer-events:none}
+.intro__cue i{position:absolute;left:50%;top:6px;width:3px;height:6px;margin-left:-1.5px;border-radius:2px;background:var(--navy);animation:bead 2s cubic-bezier(.5,0,.3,1) infinite}
+@keyframes bead{0%{transform:translateY(0);opacity:0}20%{opacity:1}70%{transform:translateY(12px);opacity:0}100%{opacity:0}}
+.intro.is-intro .intro__cue{--uo:1;top:auto;bottom:30px}
+.intro.is-revealed .intro__cue{--uo:0}
+
+/* the introduction: the tower stays, a few lines surface beside it, and the season's garlands drop into the corners */
+.itext{position:absolute;inset:0;z-index:4;pointer-events:none}
+.itext__l,.itext__r{position:absolute;width:var(--itw,300px)}
+.itext__l{text-align:right}
+.itext p{margin:0}
+.itext span{display:block;opacity:0;transform:translateY(16px);filter:blur(6px);
+  transition:opacity .5s ease,transform .5s ease,filter .5s ease}
+.intro.is-intro:not(.is-revealed) .itext span{opacity:1;transform:none;filter:blur(0);
+  transition:opacity 1.4s cubic-bezier(.25,.6,.3,1) var(--dl,0s),transform 1.8s cubic-bezier(.2,.7,.2,1) var(--dl,0s),filter 1.4s ease var(--dl,0s)}
+.itext__eyebrow{font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--ochre-deep)}
+.itext__title{margin-top:14px!important;font-family:var(--display);font-size:clamp(34px,3.3vw,50px);line-height:1.04;color:var(--navy)}
+.itext__body{font-size:15px;line-height:1.75;font-weight:400;color:var(--navy);max-width:300px}
+.itext__dates{position:relative;margin-top:22px!important;padding-top:16px;font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted)}
+.itext__dates span+span{margin-top:8px}
+.itext__dates::before{content:"";position:absolute;left:0;right:0;top:0;height:1px;background:var(--line);transform:scaleX(0);transform-origin:0 50%;transition:transform .5s ease}
+.intro.is-intro:not(.is-revealed) .itext__dates::before{transform:none;transition:transform 1.6s cubic-bezier(.2,.7,.2,1) .7s}
+.itext__dates em{font-style:normal;color:var(--ochre-deep)}
+.xdeco{position:absolute;top:-14px;z-index:4;width:min(300px,22vw);height:auto;pointer-events:none;transform-origin:50% 0;opacity:0;translate:0 -40px;
+  transition:opacity .6s ease,translate .8s ease}
+.xdeco--l{left:-16px}
+.xdeco--r{right:-18px;width:min(270px,20vw)}
+.intro.is-intro:not(.is-revealed) .xdeco{opacity:1;translate:0 0;transition:opacity 1.6s ease .3s,translate 2.2s cubic-bezier(.2,.7,.1,1) .3s;animation:deco-sway 10s ease-in-out 2.5s infinite}
+.intro.is-intro:not(.is-revealed) .xdeco--r{transition-delay:.5s;animation-duration:11.5s;animation-direction:reverse}
+
+
+@media (max-width:900px){
+  .hero{padding:3vh var(--gutter) 2.5vh}
+  .hero__head h1{font-size:46px;line-height:1.02;margin-top:10px}
+  .br-m{display:inline}
+  .hero__dates{margin-top:14px}
+  .hero .card__img{object-fit:contain}
+  .hero__col .card__img{transform:scale(1.38)}
+  .hero__dates{flex-direction:column;gap:4px;margin-top:8px;font-size:9px;letter-spacing:.18em}
+  .hero__grid{margin-top:2vh;grid-template-columns:1fr 1fr;grid-template-rows:minmax(0,2.5fr) minmax(0,1fr) minmax(0,1fr);gap:2px}
+  .hero__col .card__spec .card__m,.hero__col .card__spec .card__bar{display:none}
+  .hero__col .card__info{padding:7px 8px 8px 10px;gap:4px}
+  .hero__col .card__name{font-size:10.5px}
+  .hero__col{display:contents}
+  .hero__center{grid-column:1 / -1;grid-row:1}
+  .hero__center .card__info{padding:9px 12px 10px}
+  .xdeco{width:50vw;top:-10px}
+  .xdeco--r{width:46vw}
+  .itext__title{line-height:1.12}
+  .itext__body{max-width:none;margin:0 auto;line-height:1.7}
+}
+/* ---------- photo intro (second version): a real photograph behind the paper ----------
+   The red tower in the photo sits in the oval; as the paper lifts the camera eases back to the whole room,
+   and the introduction is set in cream on the dark panelling. The collection then fades up as before. */
+.hphoto{transform-origin:0 0;will-change:transform;transition:opacity 1.2s ease}
+.hphoto--m{display:none}
+@media (max-width:900px){.hphoto--d{display:none}.hphoto--m{display:block}}
+.hshade{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity 1s ease;
+  background:radial-gradient(ellipse 60% 42% at 50% 24%,rgba(28,16,10,.38),rgba(28,16,10,0) 100%)}
+.intro--photo.is-intro:not(.is-revealed) .hshade{opacity:1}
+.intro--photo.is-revealed .hphoto{opacity:0}
+.intro--photo .sheet__tower{transition:opacity 1.2s ease}
+.intro--photo:not(.is-revealed) .sheet__tower{opacity:0}
+.intro.intro--photo:not(.is-revealed) .orn,.intro.intro--photo:not(.is-revealed) .orn-sh{opacity:0;animation:none}
+.intro.intro--photo.is-revealed .orn,.intro.intro--photo.is-revealed .orn-sh{opacity:1;animation:none;transition:opacity 1.4s ease .2s}
+.intro--photo .xdeco,.intro--photo .halo{display:none}
+.intro--photo .itext__title,.intro--photo .itext__body{color:#F7EDE8}
+.intro--photo .itext__eyebrow{color:#EDBB74}
+.intro--photo .itext__dates{color:rgba(247,237,232,.78)}
+.intro--photo .itext__dates em{color:#EDBB74}
+.intro--photo .itext__dates::before{background:rgba(247,237,232,.3)}
+.intro--photo .itext__body{max-width:none;text-shadow:0 1px 12px rgba(20,10,5,.35)}
+.intro--photo .itext__title{text-shadow:0 2px 18px rgba(20,10,5,.35)}
+@media (min-width:901px){.intro--photo .itext__title span{display:inline-block}.intro--photo .itext__title span+span{margin-left:.26em}}
+.intro--photo.is-intro:not(.is-revealed) .intro__cue{border-color:rgba(247,237,232,.6)}
+.intro--photo.is-intro:not(.is-revealed) .intro__cue i{background:#F7EDE8}
+/* short phones: the introduction's lines tighten and the scroll cue steps aside so nothing overlaps */
+@media (max-width:900px) and (max-height:760px){
+  .intro.is-intro .intro__cue{--uo:0}
+  .itext__title{font-size:28px}
+  .itext__body{font-size:14px;line-height:1.6}
+  .itext__dates{margin-top:14px!important;padding-top:12px}
+}
+@media (prefers-reduced-motion:reduce){
+  .intro{height:auto;margin-top:0}
+  .intro__stage{position:relative;height:100vh}
+  .sleeve,.dust,.halo,.wshadow{display:none}
+  .intro__cue i{animation:none}
+}
 
 /* ---------- Laptops with short screens ---------- */
 @media (min-width:1081px) and (max-height:820px){
@@ -341,10 +572,8 @@ p{margin:0}
   .section--first{padding-top:28px}
   .shead__rule{margin:16px 0 12px}
   .shead__list{flex-direction:row;flex-wrap:wrap;gap:2px 14px}
-  /* phones: the small tiles open on the close-up, so the pieces read at a glance; the full-width
-     feature and wide cards are large enough to keep the whole object */
-  .card__detail{display:block;opacity:1;transform:none;transition:none}
-  .card--feature .card__detail,.card--wide .card__detail{display:none}
+  /* phones: every tile shows the whole piece (no close-ups) */
+  .card__detail{display:none}
   .card__info{padding:11px 10px 12px 12px;gap:8px}
   .card__meta{height:auto;align-items:flex-end;margin-top:4px}
   .card__spec{flex-direction:column;align-items:flex-start;gap:2px}
@@ -352,6 +581,14 @@ p{margin:0}
   .card__name{font-size:11.5px;letter-spacing:.06em}
   .card__meta{font-size:12px}
   .add{height:28px;min-width:28px;padding:0 7px}
+  .seal,.emb{flex-basis:34px;width:34px;height:34px;min-width:34px}
+  .card__info{padding-right:56px}
+  .card.in-bag .card__info{padding-right:70px}
+  .card__meta>:last-child{right:6px}
+  .card .qty{height:34px}
+  .card.in-bag .qty{background-size:34px 34px;grid-template-columns:auto 34px;column-gap:4px}
+  .card .qty__btn{width:20px;height:16px}
+  .add--seal .add__label{display:none}
   .qty{height:28px}
   .qty__btn{width:24px;height:24px}
   .qty__n{min-width:16px;font-size:11.5px}
@@ -360,6 +597,7 @@ p{margin:0}
   .card__bar{margin:0 6px}
   .story h2{font-size:28px}
   .story__crest{width:150px}
+  .story__crest--m{width:124px}
   .story p{font-size:15px}
   .service{padding-top:48px;padding-bottom:48px}
   .service .grid{grid-template-columns:1fr;gap:24px}
@@ -554,17 +792,6 @@ p{margin:0}
 </head>
 <body>
 
-<div class="announce">
-  <div class="wrap pad">
-    <span>Made by hand<span class="announce__more"> in Lake Forest, California</span> · Shipping across the U.S. &amp; Canada</span>
-    <nav aria-label="Utility">
-      <a href="https://maisondelafork.com/special-orders/">Request a Quote</a>
-      <a href="https://maisondelafork.com/faq/">FAQ</a>
-      <a href="https://maisondelafork.com/contact-us/">Contact</a>
-    </nav>
-  </div>
-</div>
-
 <header class="header">
   <div class="wrap pad">
     <a class="logo" href="https://maisondelafork.com/"><picture><source media="(max-width:640px)" srcset="assets/img/logo-line-navy.svg"><img src="assets/img/logo-header.svg" alt="Maison De La Fork, since 2012 — home" width="196" height="47"></picture></a>
@@ -685,14 +912,14 @@ p{margin:0}
       <a class="card__media" href="product.html" tabindex="-1" aria-hidden="true"><img class="card__img" src="assets/img/macaroon-s.jpg" alt="" loading="lazy"><img class="card__detail" src="assets/img/macaroon-s-d.jpg" alt="" loading="lazy"><span class="card__tag" aria-hidden="true"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5.5 12.5l4 4 9-9"/></svg><span>In bag</span></span></a>
       <div class="card__info">
         <h3 class="card__name"><a href="product.html">Coconut Macaroon</a></h3>
-        <div class="card__meta"><span class="card__spec"><span class="card__m">Vegan</span><span class="card__bar" aria-hidden="true">|</span><span class="card__price">$87</span></span><div class="buy" data-key="Coconut Macaroon"><button class="add" type="button" aria-label="Add Coconut Macaroon to cart"><span class="add__label">Add</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 6v12M6 12h12"/></svg></button><div class="qty" role="group" aria-label="Quantity of Coconut Macaroon in your bag"><button class="qty__btn" type="button" data-step="-1" aria-label="Remove one"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M6 12h12"/></svg></button><output class="qty__n" aria-live="polite">0</output><button class="qty__btn" type="button" data-step="1" aria-label="Add one more"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 6v12M6 12h12"/></svg></button></div></div></div>
+        <div class="card__meta"><span class="card__spec"><span class="card__m">Vegan</span><span class="card__bar" aria-hidden="true">|</span><span class="card__price">$87</span></span><div class="buy" data-key="Coconut Macaroon"><button class="add add--seal" type="button" aria-label="Add Coconut Macaroon to cart"><span class="add__label">Add</span><span class="emb" aria-hidden="true"></span></button><div class="qty" role="group" aria-label="Quantity of Coconut Macaroon in your bag"><button class="qty__btn" type="button" data-step="-1" aria-label="Remove one"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M6 12h12"/></svg></button><span class="seal seal--n"><output class="qty__n" aria-live="polite">0</output></span><button class="qty__btn" type="button" data-step="1" aria-label="Add one more"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 6v12M6 12h12"/></svg></button></div></div></div>
       </div>
     </article>
     <article class="card">
       <a class="card__media" href="product.html" tabindex="-1" aria-hidden="true"><img class="card__img" src="assets/img/diba-s.jpg" alt="" loading="lazy"><img class="card__detail" src="assets/img/diba-s-d.jpg" alt="" loading="lazy"><span class="card__tag" aria-hidden="true"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5.5 12.5l4 4 9-9"/></svg><span>In bag</span></span></a>
       <div class="card__info">
         <h3 class="card__name"><a href="product.html">Diba Collection</a></h3>
-        <div class="card__meta"><span class="card__spec"><span class="card__m">Small</span><span class="card__bar" aria-hidden="true">|</span><span class="card__price">$101</span></span><div class="buy" data-key="Diba Collection"><button class="add" type="button" aria-label="Add Diba Collection to cart"><span class="add__label">Add</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 6v12M6 12h12"/></svg></button><div class="qty" role="group" aria-label="Quantity of Diba Collection in your bag"><button class="qty__btn" type="button" data-step="-1" aria-label="Remove one"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M6 12h12"/></svg></button><output class="qty__n" aria-live="polite">0</output><button class="qty__btn" type="button" data-step="1" aria-label="Add one more"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 6v12M6 12h12"/></svg></button></div></div></div>
+        <div class="card__meta"><span class="card__spec"><span class="card__m">Small</span><span class="card__bar" aria-hidden="true">|</span><span class="card__price">$101</span></span><div class="buy" data-key="Diba Collection"><button class="add add--seal" type="button" aria-label="Add Diba Collection to cart"><span class="add__label">Add</span><span class="emb" aria-hidden="true"></span></button><div class="qty" role="group" aria-label="Quantity of Diba Collection in your bag"><button class="qty__btn" type="button" data-step="-1" aria-label="Remove one"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M6 12h12"/></svg></button><span class="seal seal--n"><output class="qty__n" aria-live="polite">0</output></span><button class="qty__btn" type="button" data-step="1" aria-label="Add one more"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 6v12M6 12h12"/></svg></button></div></div></div>
       </div>
     </article>
     <article class="card">
@@ -706,7 +933,7 @@ p{margin:0}
       <a class="card__media" href="product.html" tabindex="-1" aria-hidden="true"><img class="card__img" src="assets/img/botanical-s.jpg" alt="" loading="lazy"><img class="card__detail" src="assets/img/botanical-s-d.jpg" alt="" loading="lazy"><span class="card__tag" aria-hidden="true"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5.5 12.5l4 4 9-9"/></svg><span>In bag</span></span></a>
       <div class="card__info">
         <h3 class="card__name"><a href="product.html">Noon Berenji, Botanical</a></h3>
-        <div class="card__meta"><span class="card__spec"><span class="card__m">4 patterns</span><span class="card__bar" aria-hidden="true">|</span><span class="card__price">$112</span></span><div class="buy" data-key="Noon Berenji, Botanical"><button class="add" type="button" aria-label="Add Noon Berenji, Botanical to cart"><span class="add__label">Add</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 6v12M6 12h12"/></svg></button><div class="qty" role="group" aria-label="Quantity of Noon Berenji, Botanical in your bag"><button class="qty__btn" type="button" data-step="-1" aria-label="Remove one"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M6 12h12"/></svg></button><output class="qty__n" aria-live="polite">0</output><button class="qty__btn" type="button" data-step="1" aria-label="Add one more"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 6v12M6 12h12"/></svg></button></div></div></div>
+        <div class="card__meta"><span class="card__spec"><span class="card__m">4 patterns</span><span class="card__bar" aria-hidden="true">|</span><span class="card__price">$112</span></span><div class="buy" data-key="Noon Berenji, Botanical"><button class="add add--seal" type="button" aria-label="Add Noon Berenji, Botanical to cart"><span class="add__label">Add</span><span class="emb" aria-hidden="true"></span></button><div class="qty" role="group" aria-label="Quantity of Noon Berenji, Botanical in your bag"><button class="qty__btn" type="button" data-step="-1" aria-label="Remove one"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M6 12h12"/></svg></button><span class="seal seal--n"><output class="qty__n" aria-live="polite">0</output></span><button class="qty__btn" type="button" data-step="1" aria-label="Add one more"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 6v12M6 12h12"/></svg></button></div></div></div>
       </div>
     </article>
       </div>
@@ -846,6 +1073,175 @@ window.MDLFBag=(function(){
     }));
   });
 })();
+
+/* Holiday intro.
+   The first part is in the visitor's hand: scrolling lifts the blue paper away. Near the end of that lift
+   the page takes over and eases the paper the last of the way; straight after, the tower's tile and the
+   other pieces fade up into place, a warm light blooms and fades, and a little gold dust rises.
+   Scrolling back up reverses it. The tower itself never moves or changes size. */
+(function(){
+  const sec=document.querySelector('.intro'); if(!sec) return;
+  const root=document.documentElement, st=sec.querySelector('.intro__stage'), sheet=sec.querySelector('.sheet'), img=sheet.querySelector('.sheet__tower');
+  const orn=sheet.querySelector('.orn'), ornSh=sheet.querySelector('.orn-sh');
+  // the bauble and its shadow, in the tower photo's own pixels (1060 wide): [left, top, width]
+  const ORN=[726,823,299], ORNSH=[703,1019,346], ORNR=146.3;
+  const paper=sec.querySelector('.sleeve__paper'), wins=sec.querySelectorAll('.js-win'), slot=sec.querySelector('.hero__slot');
+  const pwin=sec.querySelector('.sleeve__win'), pshadow=sec.querySelector('.wshadow');
+  const PH={rx:238,ry:332.7,cx:328,cy:422.9,w:656,h:845,tile:480};   // the oval inside paper-window.png / paper-shadow.png
+  const htile=sec.querySelector('.htile'), halo=sec.querySelector('.halo'), dust=sec.querySelector('.dust'), set=(k,v)=>st.style.setProperty(k,v);
+  const clamp=(x,a=0,b=1)=>Math.min(b,Math.max(a,x));
+  const SHAPE=[[50,0],[58,0,62,6,66,10],[72,6,80,8,82,16],[96,40,100,58,100,75],[100,92,96,110,82,134],[80,142,72,144,66,140],[62,144,58,150,50,150],
+               [42,150,38,144,34,140],[28,144,20,142,18,134],[4,110,0,92,0,75],[0,58,4,40,18,16],[20,8,28,6,34,10],[38,6,42,0,50,0]];
+  const TW=938/1700, TX=533.5/1060, TY=868/1700, AR=1060/1700, TWX=526/1060;   // the tower (without its shadow) inside hol-pastel.jpg
+  const reduceMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // the order the pieces surface in: the head first, then around the tower
+  sec.querySelector('.hero__head').style.setProperty('--dl','.1s');
+  const order=[...sec.querySelectorAll('.hero__center .card'),...sec.querySelectorAll('.hero__col .card')];
+  const delays=[0,.18,.42,.3,.54];
+  order.forEach((c,i)=>c.style.setProperty('--dl',(delays[i]??.6)+'s'));
+  sec.querySelectorAll('.itext span').forEach((s,i)=>s.style.setProperty('--dl',(.12+i*.1)+'s'));
+
+  let W,H,box,span,PHS=null; const photo=sec.classList.contains('intro--photo');
+  const layout=()=>{
+    const hh=Math.round(document.querySelector('.header').getBoundingClientRect().bottom+scrollY);
+    root.style.setProperty('--hh',hh+'px');
+    W=st.clientWidth; H=st.clientHeight; span=sec.offsetHeight-H;
+    const phone=W<=900, hero=sec.querySelector('.hero');
+    // phones: the crest fills the width, so the composition needs room above and below the tower; the collection's
+    // grid is pushed down until the tower's tile is centred where the oval should sit (the tower never moves)
+    hero.style.paddingTop='';
+    // the ribbon spans 784 px of frame-print2.png around the oval's centre; on phones it reaches to 10 px from the edges
+    // on phones the ribbon is drawn smaller (frame-print-m.png: the bow and swags scaled to 80% about the knot), spanning 636 px
+    const fsP=(W-20)/636, wwP=fsP*380/1.03, whP=wwP*PH.ry/PH.rx;
+    if(phone){ const top=(585.2-128)*fsP, tH=Math.min(W*.6,300)*562/1174, bot=whP/2*1.03+4*fsP+wwP*.44*232/366*.88+14+tH+22+34;
+      const hhv=Math.round(document.querySelector('.header').getBoundingClientRect().height);
+      const target=Math.max(hhv+22+top, hhv+(H-hhv-top-bot)*.32+top);
+      for(let i=0;i<5;i++){ const r=slot.getBoundingClientRect(), t=st.getBoundingClientRect(), c=r.top-t.top+r.height*.58, d=target-c;
+        if(Math.abs(d)<1) break; hero.style.paddingTop=Math.max(0,parseFloat(getComputedStyle(hero).paddingTop)+d*1.7)+'px'; } }
+    const sr=slot.getBoundingClientRect(), tr=st.getBoundingClientRect();
+    box={t:sr.top-tr.top,l:sr.left-tr.left,w:sr.width,h:sr.height};
+    let w0=Math.min(box.h*.53/TW*AR, box.w*.53/TWX);
+    // on phones the tower sits a little below the middle of its tile, so the tile has headroom above the bow
+    const KY=phone?.58:.5;
+    if(phone) w0=Math.min(whP*.74/.92*AR/(TW*.8), box.h*.92*AR/TW/.68, 2*(box.h*(1-KY)-12)*AR/TW/.68);
+    const w=w0*.85*.8, th0=w0/AR*TW*.8, th=w/AR*TW, cx=box.l+box.w/2, cy=box.t+box.h*KY;
+    img.style.width=w.toFixed(1)+'px'; img.style.left=(cx-w*TX).toFixed(1)+'px'; img.style.top=(cy-(w/AR)*TY).toFixed(1)+'px';
+    const ps=w/1060, il=cx-w*TX, it=cy-(w/AR)*TY;
+    if(photo){ const ph=[...sec.querySelectorAll('.hphoto')].find(i=>getComputedStyle(i).display!=='none');
+      const [px,py,pth]=ph.dataset.t.split(',').map(Number), [pw,phh]=ph.dataset.s.split(',').map(Number);
+      const S=Math.max(W/pw,H/phh), L=(W-pw*S)/2, T=(H-phh*S)*.7, k=th/(pth*S);
+      Object.assign(ph.style,{width:(pw*S)+'px',left:L+'px',top:T+'px'});
+      PHS={el:ph,k,tx:cx-L-k*S*px,ty:cy-T-k*S*py}; }
+    for(const [el,b] of [[orn,ORN],[ornSh,ORNSH]]) Object.assign(el.style,{left:(il+b[0]*ps).toFixed(1)+'px',top:(it+b[1]*ps).toFixed(1)+'px',width:(b[2]*ps).toFixed(1)+'px'});
+    const rd=ORNR*ps*.85; set('--rd',rd.toFixed(1)+'px'); set('--rt',(rd/(ORNR*ps)*180/Math.PI).toFixed(1)+'deg');
+    const hs=Math.max(box.w,box.h)*1.05; Object.assign(halo.style,{width:hs+'px',height:hs+'px',left:(cx-hs/2)+'px',top:(cy-hs/2)+'px'});
+    const wh=th0/.74*.92, ww=wh*PH.rx/PH.ry;
+    const k=wh/2/PH.ry, rx=ww/2*1.035, ry=wh/2*1.035, d='M'+(cx-rx).toFixed(1)+' '+cy.toFixed(1)+' a'+rx.toFixed(1)+' '+ry.toFixed(1)+' 0 1 0 '+(2*rx).toFixed(1)+' 0 a'+rx.toFixed(1)+' '+ry.toFixed(1)+' 0 1 0 '+(-2*rx).toFixed(1)+' 0 Z';
+    for(const el of [pwin,pshadow]) Object.assign(el.style,{width:(PH.w*k)+'px',left:(cx-PH.cx*k)+'px',top:(cy-PH.cy*k)+'px'});
+    paper.style.backgroundSize=(PH.tile*k)+'px';
+    wins.forEach(p=>p.setAttribute('d',d));
+    const mask="url(\"data:image/svg+xml,"+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="'+W+'" height="'+H+'"><path fill-rule="evenodd" d="M0 0H'+W+'V'+H+'H0Z '+d+'"/></svg>')+"\")";
+    paper.style.webkitMaskImage=mask; paper.style.maskImage=mask;
+    set('--wy',cy+'px'); set('--wwh',(ww/2)+'px');
+    // crest frame: its gold oval sits just outside the cut (frame-print2.png: oval rx 190 at 654,585 in a 1070 x 1041 image)
+    const fr=sec.querySelector('.sv--frame'), cu=sec.querySelector('.sv--cupid'), ti=sec.querySelector('.sv--title');
+    const fs=(ww/2*1.03)/190;
+    for(const f of sec.querySelectorAll('.sv--frame')) Object.assign(f.style,{width:(1070*fs)+'px',left:(cx-654.3*fs)+'px',top:(cy-585.2*fs)+'px'});
+    const ringB=cy+wh/2*1.03+4*fs;                               // the bottom of the gold oval
+    const cw=ww*.44, ch=cw*232/366; Object.assign(cu.style,{width:cw+'px',left:(cx-cw*.5)+'px',top:(ringB-ch*.12)+'px'});
+    const tw=phone?Math.min(W*.6,300):Math.min(ww*2.1, W-2*24); const bottom=ringB+ch*.88+(phone?12:20);
+    Object.assign(ti.style,{width:tw+'px',left:(cx-tw/2)+'px',top:bottom+'px'});
+    Object.assign(htile.style,{left:box.l+'px',top:box.t+'px',width:box.w+'px',height:box.h+'px'});
+    const tl=sec.querySelector('.itext__l'), tr2=sec.querySelector('.itext__r');
+    if(!phone){ const iw=Math.min(310,cx-box.w*.36-60); set('--itw',iw+'px');
+      Object.assign(tl.style,{left:(cx-box.w*.36-iw)+'px',top:(cy-70)+'px',right:'',textAlign:''});
+      Object.assign(tr2.style,{left:(cx+box.w*.36)+'px',top:(cy-62)+'px'}); }
+    else { set('--itw',(W-48)+'px'); const below=Math.min(box.t+box.h+16, cy+th/2+26);
+      Object.assign(tl.style,{left:'24px',top:below+'px',textAlign:'center'}); Object.assign(tr2.style,{left:'24px',top:(below+tl.offsetHeight+16)+'px',textAlign:'center'}); }
+    if(photo){ // the introduction sits on the dark panelling above the garland, centred
+      const w1=phone?W-48:Math.min(760,W-80), w2=phone?W-48:Math.min(520,W-80);
+      Object.assign(tl.style,{width:w1+'px',left:((W-w1)/2)+'px',top:(H*(phone?.1:.14))+'px',textAlign:'center'});
+      Object.assign(tr2.style,{width:w2+'px',left:((W-w2)/2)+'px',top:(H*(phone?.1:.14)+tl.offsetHeight+(phone?14:18))+'px',textAlign:'center'}); }
+    set('--cuey',Math.min(H-50,bottom+ti.offsetWidth*(phone?562/1174:344/2241)+(phone?22:18))+'px');
+    // gold dust, scattered around the tower
+    dust.innerHTML=''; const n=W<=900?16:28;
+    for(let i=0;i<n;i++){ const m=document.createElement('i'), a=Math.random()*Math.PI*2, r=.25+Math.random()*.55;
+      m.style.cssText=`--x:${(cx+Math.cos(a)*box.w*r).toFixed(0)}px;--y:${(cy+Math.sin(a)*box.h*r*.8).toFixed(0)}px;--s:${(2+Math.random()*3.5).toFixed(1)}px;`+
+        `--d:${(.7+Math.random()*1.8).toFixed(2)}s;--t:${(2.6+Math.random()*2.2).toFixed(2)}s;--dx:${(Math.random()*40-20).toFixed(0)}px;--dy:${(-40-Math.random()*70).toFixed(0)}px`;
+      dust.appendChild(m); }
+  };
+
+  const paintPhoto=s=>{ if(!PHS) return; const p=clamp((s-.04)/.96), e=p*p*(3-2*p), k=PHS.k+(1-PHS.k)*e;
+    PHS.el.style.transform=`translate(${(PHS.tx*(1-e)).toFixed(1)}px,${(PHS.ty*(1-e)).toFixed(1)}px) scale(${k.toFixed(4)})`; };
+  const paintSleeve=s=>{ paintPhoto(s); set('--sy',(-s*H*1.06).toFixed(1)+'px'); set('--so',clamp(s*12).toFixed(3)); set('--uo',(1-clamp(s*12)).toFixed(3)); };
+  // three resting places: the paper (0), the introduction (A), the collection (B)
+  let A=0,B=0, intro=false, revealed=false, gliding=false, lockUntil=0, lastY=scrollY, raf=0;
+  const setStops=()=>{ B=span; A=span/2; };
+  const enterIntro=instant=>{ if(intro) return; intro=true; paintSleeve(1); sec.classList.add('is-intro'); if(instant) sec.classList.add('no-anim'); };
+  const leaveIntro=()=>{ if(!intro) return; intro=false; sec.classList.remove('is-intro','no-anim'); };
+  const reveal=instant=>{ if(revealed) return; revealed=true; enterIntro(instant); sec.classList.add('is-revealed'); if(instant) sec.classList.add('no-anim'); };
+  const unreveal=()=>{ if(!revealed) return; revealed=false; sec.classList.remove('is-revealed'); };
+  const glide=(to,dur,ease,done)=>{
+    gliding=true; cancelAnimationFrame(raf); lockUntil=Infinity;
+    const from=scrollY, t0=performance.now();
+    const step=now=>{ const t=clamp((now-t0)/dur), y=from+(to-from)*ease(t);
+      scrollTo({top:y,behavior:'instant'}); if(!intro) paintSleeve(clamp(y/A));
+      if(t<1) raf=requestAnimationFrame(step); else { gliding=false; lastY=scrollY; lockUntil=performance.now()+900; done&&done(); } };
+    raf=requestAnimationFrame(step);
+  };
+  const easeOut=t=>1-Math.pow(1-t,3), easeIO=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+  const toIntro=()=>{ sec.classList.add('is-intro'); glide(A,520+(A-scrollY)/Math.max(1,A)*480,easeOut,()=>enterIntro(false)); };
+  const toCollection=()=>{ reveal(false); glide(B,1300,easeIO); };
+  const backToIntro=()=>{ unreveal(); glide(A,1100,easeIO); };
+  const onScroll=()=>{
+    if(gliding) return;
+    const y=scrollY, down=y>lastY; lastY=y;
+    if(y<A-2){                                                   // the paper: in the visitor's hand
+      if(intro&&performance.now()>lockUntil){ unreveal(); leaveIntro(); }
+      if(!intro){ const s=clamp(y/A); paintSleeve(s); if(down&&s>=.62&&!reduceMotion) toIntro(); }
+      return;
+    }
+    if(y<B-2){ enterIntro(false); if(y>(A+B)/2) reveal(false); else unreveal(); return; }   // scrollbar or keys between the stops
+    reveal(y>B+H*.5);
+  };
+  // gestures at the introduction move on to the collection; at the top of the collection, back to the introduction
+  // a gesture counts only when it is fresh: after a pause, or a new push stronger than the fading momentum
+  let lastWheelT=0, lastMag=0;
+  const fresh=(mag)=>{ const now=performance.now(), f=(now-lastWheelT>250)||(mag>lastMag*1.4+4); lastWheelT=now; lastMag=mag; return f; };
+  const onIntent=(dir,e,mag)=>{
+    if(reduceMotion) return;
+    const y=scrollY, now=performance.now(), isFresh=mag===undefined?true:fresh(mag);
+    if(gliding||now<lockUntil){ if(y<=B+4) e.preventDefault(); return; }
+    const atStop=(intro&&!revealed&&Math.abs(y-A)<6)||(revealed&&y<=B+4&&y>=B-6&&dir<0);
+    if(atStop&&!isFresh){ e.preventDefault(); return; }
+    if(intro&&!revealed&&Math.abs(y-A)<6&&dir>0){ e.preventDefault(); toCollection(); }
+    else if(revealed&&y<=B+4&&y>=B-6&&dir<0){ e.preventDefault(); backToIntro(); }
+  };
+  addEventListener('wheel',e=>{ const m=Math.abs(e.deltaY); if(m>=1) onIntent(Math.sign(e.deltaY),e,m); else fresh(0); },{passive:false});
+  let ty=null;
+  addEventListener('touchstart',e=>{ty=e.touches[0].clientY;},{passive:true});
+  addEventListener('touchmove',e=>{ if(ty===null) return; const dy=ty-e.touches[0].clientY; if(gliding){e.preventDefault();return;} if(Math.abs(dy)>8){ onIntent(Math.sign(dy),e); ty=null; } },{passive:false});
+  addEventListener('keydown',e=>{
+    if(e.target.closest&&e.target.closest('input,textarea,select')) return;
+    const down=['ArrowDown','PageDown',' '].includes(e.key)&&!e.shiftKey, up=['ArrowUp','PageUp'].includes(e.key)||(e.key===' '&&e.shiftKey);
+    if(down) onIntent(1,e); else if(up) onIntent(-1,e);
+  });
+
+  root.classList.add('js-hero');
+  addEventListener('scroll',onScroll,{passive:true});
+  addEventListener('resize',()=>{ layout(); setStops(); if(!intro) paintSleeve(clamp(scrollY/A)); });
+  layout(); setStops();
+  if(reduceMotion){ reveal(true); }
+  else { lastY=scrollY; onScroll(); }
+  if(document.fonts) document.fonts.ready.then(layout);
+})();
+
+/* the seal is pressed on every add, and again on every change of quantity */
+document.querySelectorAll('.buy').forEach(b=>b.addEventListener('click',e=>{
+  if(!e.target.closest('.qty__btn')) return;
+  requestAnimationFrame(()=>{ const s=b.closest('.card').classList.contains('in-bag')?b.querySelector('.seal--n'):b.querySelector('.add .seal');
+    if(!s) return; s.classList.remove('is-pressed'); void s.offsetWidth; s.classList.add('is-pressed'); });
+}));
 
 /* Corner pieces drift a few pixels against the pointer, as on the Holiday site */
 (function(){
